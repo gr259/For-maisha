@@ -76,7 +76,7 @@ html, body {
 .m2 {
     font-family: 'Dancing Script', cursive;
     font-size: 36px;
-    font-weight: 400;
+    font-weight: 700;
     color: #fff;
     opacity: 0;
     transform: translateY(15px);
@@ -474,7 +474,7 @@ html, body {
 .form-group textarea {
     resize: none;
     line-height: 1.5;
-    height: 120px;
+    height: 110px;
 }
 
 .form-actions {
