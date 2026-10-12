@@ -76,7 +76,7 @@ html, body {
 .m2 {
     font-family: 'Dancing Script', cursive;
     font-size: 36px;
-    font-weight: 700;
+    font-weight: 400;
     color: #fff;
     opacity: 0;
     transform: translateY(15px);
@@ -405,7 +405,7 @@ html, body {
     font-size: 14px;
     line-height: 1.7;
     color: rgba(255, 255, 255, 0.85);
-    min-height: 150px;
+    min-height: 100px;
     margin-bottom: 24px;
     white-space: pre-line;
 }
