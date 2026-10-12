@@ -1,605 +1,201 @@
-"use strict";
+Writing
+(() => {
+    'use strict';
 
-/* ==========================================
-   MOHIBUL & MAISHA — FRIENDSHIP HEARTBEAT
-   ========================================== */
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
 
-const DEFAULT_TO = "Maisha";
-const DEFAULT_FROM = "Mohibul";
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    let CX = W / 2;
+    let CY = H / 2;
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-const DEFAULT_MESSAGE = `FOR MY BEST FRIEND 💗
+    let scale = Math.min(W, H) * 0.22;
 
-Dear Maisha,
-
-This little message is a reminder of how special our friendship is to me. ✨
-
-I created this little digital heartbeat to celebrate the beautiful bond we share. Every heartbeat represents the care, trust, laughter, and wonderful memories that make our friendship meaningful.
-
-Thank you for being such a special friend. I hope life brings you endless happiness, success, and countless reasons to smile. 🌸
-
-No matter how busy life gets or where our journeys take us, I hope we always cherish the beautiful memories we create together.
-
-A true friendship is a precious gift, and I am grateful to have you as my friend.
-
-Stay happy, keep smiling, and always be the amazing Maisha you are! 💗
-
-With friendship and best wishes,
-Your friend, Mohibul 🫂♾️`;
-
-const WORDS = [
-    "Mohibul & Maisha",
-    "Best Friends Forever",
-    "Beautiful Friendship",
-    "Trust & Care",
-    "Memories Forever",
-    "Always Friends",
-    "Keep Smiling",
-    "Friends for Life",
-    "Maisha 💗",
-    "Mohibul 💗",
-    "Stay Happy ✨",
-    "Friendship ♾️"
-];
-
-const LOADING_STEPS = [
-    { limit: 20, text: "Preparing our friendship... 💗" },
-    { limit: 45, text: "Connecting Mohibul & Maisha... ✨" },
-    { limit: 70, text: "Creating beautiful memories... 🌸" },
-    { limit: 90, text: "Adding friendship magic... 💖" },
-    { limit: 100, text: "Our friendship is ready! 💓" }
-];
-
-let recipient = DEFAULT_TO;
-let sender = DEFAULT_FROM;
-let message = DEFAULT_MESSAGE;
-
-let typingTimer = null;
-let loadingTimer = null;
-let animationFrame = null;
-let experienceStarted = false;
-let particles = [];
-let canvasWidth = 0;
-let canvasHeight = 0;
-
-
-/* ---------- ELEMENTS ---------- */
-
-const $ = (selector) => document.querySelector(selector);
-
-
-/* ---------- LOAD SAVED DATA ---------- */
-
-function loadSavedData() {
-    try {
-        recipient =
-            localStorage.getItem("friendship_to") || DEFAULT_TO;
-
-        sender =
-            localStorage.getItem("friendship_from") || DEFAULT_FROM;
-
-        message =
-            localStorage.getItem("friendship_msg") || DEFAULT_MESSAGE;
-    } catch (error) {
-        recipient = DEFAULT_TO;
-        sender = DEFAULT_FROM;
-        message = DEFAULT_MESSAGE;
+    function resize() {
+        W = window.innerWidth;
+        H = window.innerHeight;
+        CX = W / 2;
+        CY = H / 2;
+        scale = Math.min(W, H) * 0.22;
+        canvas.width = W * dpr;
+        canvas.height = H * dpr;
+        canvas.style.width = W + 'px';
+        canvas.style.height = H + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-}
+    window.addEventListener('resize', resize);
+    resize();
 
+    const NUM_POINTS = 180;
+    const ROTATION_SPEED_Y = 0.012;
 
-/* ---------- READ SHARED LINK ---------- */
+    const WORDS = [
+        'friendship', 'Friendship', '❤', 'friends', 'best friends',
+        'forever', 'always', 'Maisha', 'Mohibul', 'bestie',
+        'true friends', 'smile'
+    ];
 
-function loadSharedLink() {
-    const params = new URLSearchParams(location.search);
+    let startTimestamp = null;
+    let isIntroFinished = false;
 
-    try {
-        const encoded = params.get("d");
-
-        if (encoded) {
-            const binary = atob(encoded);
-
-            const bytes = Uint8Array.from(
-                binary,
-                char => char.charCodeAt(0)
-            );
-
-            const data = JSON.parse(
-                new TextDecoder().decode(bytes)
-            );
-
-            if (typeof data.to === "string") {
-                recipient = data.to;
-            }
-
-            if (typeof data.from === "string") {
-                sender = data.from;
-            }
-
-            if (typeof data.msg === "string") {
-                message = data.msg;
-            }
-
-            return;
-        }
-    } catch (error) {
-        console.warn("Could not read shared letter.", error);
+    function playClickSound() {
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            const audioCtx = new AudioCtx();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime + 0.08);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        } catch (e) { }
     }
 
-    if (params.has("to")) recipient = params.get("to");
-    if (params.has("from")) sender = params.get("from");
-    if (params.has("msg")) message = params.get("msg");
-}
-
-
-/* ---------- UPDATE LETTER ---------- */
-
-function updateLetter() {
-    $("#letterHeaderTitle").textContent =
-        `For ${recipient} 💗`;
-
-    $("#letterSign").textContent =
-        `— Your friend, ${sender} 💗`;
-
-    $("#recipientInput").value = recipient;
-    $("#senderInput").value = sender;
-    $("#messageInput").value = message;
-
-    document.title =
-        `💗 A Heartbeat of Friendship | ${sender} & ${recipient}`;
-}
-
-
-/* ---------- SAVE DATA ---------- */
-
-function saveData() {
-    try {
-        localStorage.setItem("friendship_to", recipient);
-        localStorage.setItem("friendship_from", sender);
-        localStorage.setItem("friendship_msg", message);
-    } catch (error) {
-        console.warn("Could not save letter.", error);
-    }
-}
-
-
-/* ---------- NOTIFICATION ---------- */
-
-function showToast(text) {
-    const toast = $("#shareToast");
-
-    if (!toast) {
-        alert(text);
-        return;
-    }
-
-    toast.textContent = text;
-    toast.classList.add("show");
-    toast.style.display = "block";
-
-    clearTimeout(showToast.timer);
-
-    showToast.timer = setTimeout(() => {
-        toast.classList.remove("show");
-        toast.style.display = "";
-    }, 2500);
-}
-
-
-/* ---------- TYPEWRITER EFFECT ---------- */
-
-function typeLetter(text) {
-    const body = $("#letterBody");
-
-    if (!body) return;
-
-    clearInterval(typingTimer);
-    body.textContent = "";
-
-    let index = 0;
-
-    typingTimer = setInterval(() => {
-        if (index >= text.length) {
-            clearInterval(typingTimer);
-            typingTimer = null;
-            return;
-        }
-
-        body.textContent += text[index];
-        index++;
-    }, 18);
-}
-
-
-/* ---------- OPEN LETTER ---------- */
-
-function openLetter() {
-    const overlay = $("#letterOverlay");
-
-    updateLetter();
-
-    overlay.classList.add("active");
-    overlay.setAttribute("aria-hidden", "false");
-
-    $("#letterViewContainer").style.display = "block";
-    $("#letterEditContainer").style.display = "none";
-
-    typeLetter(message);
-}
-
-
-/* ---------- CLOSE LETTER ---------- */
-
-function closeLetter() {
-    $("#letterOverlay").classList.remove("active");
-    $("#letterOverlay").setAttribute("aria-hidden", "true");
-
-    clearInterval(typingTimer);
-    typingTimer = null;
-}
-
-
-/* ---------- EDIT LETTER ---------- */
-
-function openEditor() {
-    $("#letterViewContainer").style.display = "none";
-    $("#letterEditContainer").style.display = "block";
-
-    $("#recipientInput").value = recipient;
-    $("#senderInput").value = sender;
-    $("#messageInput").value = message;
-}
-
-function closeEditor() {
-    $("#letterEditContainer").style.display = "none";
-    $("#letterViewContainer").style.display = "block";
-}
-
-
-/* ---------- SAVE LETTER BUTTON ---------- */
-
-function saveLetter() {
-    recipient =
-        $("#recipientInput").value.trim() || DEFAULT_TO;
-
-    sender =
-        $("#senderInput").value.trim() || DEFAULT_FROM;
-
-    message =
-        $("#messageInput").value.trim() || DEFAULT_MESSAGE;
-
-    saveData();
-    updateLetter();
-    closeEditor();
-    typeLetter(message);
-
-    showToast("Friendship letter saved! 💗");
-}
-
-
-/* ---------- COPY SHAREABLE LINK ---------- */
-
-function makeShareURL() {
-    const data = {
-        to: recipient,
-        from: sender,
-        msg: message
-    };
-
-    const bytes = new TextEncoder().encode(JSON.stringify(data));
-
-    let binary = "";
-
-    bytes.forEach(byte => {
-        binary += String.fromCharCode(byte);
-    });
-
-    const encoded = btoa(binary);
-
-    const url = new URL(location.href);
-
-    url.search = "";
-    url.searchParams.set("d", encoded);
-
-    return url.toString();
-}
-
-async function shareLetter() {
-    const button = $("#shareLetterBtn");
-    const originalText = button.textContent;
-
-    try {
-        const shareURL = makeShareURL();
-
-        await navigator.clipboard.writeText(shareURL);
-
-        showToast("Friendship link copied! 💗");
-
-    } catch (error) {
-        const shareURL = makeShareURL();
-
-        window.prompt(
-            "Copy your friendship link:",
-            shareURL
-        );
-    }
-
-    button.textContent = "Link Ready! 💗";
-
-    setTimeout(() => {
-        button.textContent = originalText;
-    }, 1800);
-}
-
-
-/* ---------- CANVAS SETUP ---------- */
-
-function setupCanvas() {
-    const canvas = $("#c");
-
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-
-    if (!ctx) return;
-
-    function resizeCanvas() {
-        const ratio = Math.min(
-            window.devicePixelRatio || 1,
-            2
-        );
-
-        canvasWidth = window.innerWidth;
-        canvasHeight = window.innerHeight;
-
-        canvas.width = canvasWidth * ratio;
-        canvas.height = canvasHeight * ratio;
-
-        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-
-        createParticles();
-    }
-
-    function createParticles() {
-        const count = Math.min(
-            Math.floor((canvasWidth * canvasHeight) / 5500),
-            180
-        );
-
-        particles = [];
-
-        for (let i = 0; i < count; i++) {
-            particles.push({
-                x: Math.random() * canvasWidth,
-                y: Math.random() * canvasHeight,
-                size: Math.random() * 2.2 + 0.5,
-                speed: Math.random() * 0.55 + 0.12,
-                alpha: Math.random() * 0.6 + 0.2,
-                word: WORDS[
-                    Math.floor(Math.random() * WORDS.length)
-                ],
-                wordParticle: Math.random() > 0.86
-            });
-        }
-    }
-
-    function drawHeart(x, y, size, scale) {
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.scale(scale, scale);
-
-        ctx.beginPath();
-        ctx.moveTo(0, size * 0.32);
-
-        ctx.bezierCurveTo(
-            -size * 1.1, -size * 0.28,
-            -size * 0.75, -size * 1.05,
-            0, -size * 0.48
-        );
-
-        ctx.bezierCurveTo(
-            size * 0.75, -size * 1.05,
-            size * 1.1, -size * 0.28,
-            0, size * 0.32
-        );
-
-        ctx.closePath();
-
-        const gradient = ctx.createLinearGradient(
-            -size, -size, size, size
-        );
-
-        gradient.addColorStop(0, "#ff4f91");
-        gradient.addColorStop(0.55, "#ff83b2");
-        gradient.addColorStop(1, "#ffb5d0");
-
-        ctx.fillStyle = gradient;
-        ctx.shadowColor = "rgba(255, 70, 145, 0.75)";
-        ctx.shadowBlur = 25;
-        ctx.fill();
-
-        ctx.restore();
-    }
-
-    function draw(time) {
-        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-        particles.forEach(particle => {
-            particle.y -= particle.speed;
-
-            if (particle.y < -20) {
-                particle.y = canvasHeight + 20;
-                particle.x = Math.random() * canvasWidth;
-            }
-
-            if (particle.wordParticle) {
-                ctx.globalAlpha = particle.alpha * 0.75;
-                ctx.fillStyle = "#ff9dc1";
-                ctx.font = "12px sans-serif";
-                ctx.fillText(
-                    particle.word,
-                    particle.x,
-                    particle.y
-                );
+    function startCardLoader() {
+        const loadingBar = document.getElementById('loadingBar');
+        const statusText = document.getElementById('statusText');
+        const startBtn = document.getElementById('startBtn');
+
+        const duration = 2400;
+        const steps = [
+            { threshold: 20, text: 'Preparing our friendship... 💗' },
+            { threshold: 50, text: 'Loading Mohibul\'s friendship... 🔒' },
+            { threshold: 80, text: 'Celebrating Maisha\'s friendship... 🌸' },
+            { threshold: 95, text: 'Adding 999 tons of friendship... 💖' },
+            { threshold: 100, text: 'Friendship magic is ready! ✨' }
+        ];
+
+        let loaderStart = null;
+
+        function animateLoader(timestamp) {
+            if (!loaderStart) loaderStart = timestamp;
+            const progress = Math.min((timestamp - loaderStart) / duration, 1);
+            const percent = Math.floor(progress * 100);
+
+            loadingBar.style.width = `${percent}%`;
+            const activeStep = steps.find(s => percent <= s.threshold) || steps[steps.length - 1];
+            statusText.textContent = activeStep.text;
+
+            if (progress < 1) {
+                requestAnimationFrame(animateLoader);
             } else {
-                ctx.globalAlpha = particle.alpha;
-                ctx.fillStyle = "#ff8ab5";
-                ctx.beginPath();
-                ctx.arc(
-                    particle.x,
-                    particle.y,
-                    particle.size,
-                    0,
-                    Math.PI * 2
-                );
-                ctx.fill();
-            }
-        });
-
-        ctx.globalAlpha = 1;
-
-        const beat = 1 + Math.pow(
-            Math.max(0, Math.sin(time * 0.003)),
-            18
-        ) * 0.10;
-
-        const size = Math.min(canvasWidth, canvasHeight) * 0.19;
-
-        drawHeart(
-            canvasWidth / 2,
-            canvasHeight / 2,
-            size,
-            beat
-        );
-
-        animationFrame = requestAnimationFrame(draw);
-    }
-
-    resizeCanvas();
-
-    window.addEventListener("resize", resizeCanvas);
-
-    if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-    }
-
-    animationFrame = requestAnimationFrame(draw);
-}
-
-
-/* ---------- START EXPERIENCE ---------- */
-
-function startExperience() {
-    if (experienceStarted) {
-        openLetter();
-        return;
-    }
-
-    experienceStarted = true;
-
-    const button = $("#startBtn");
-    const loadingBar = $("#loadingBar");
-    const status = $("#statusText");
-    const overlay = $("#startOverlay");
-    const buttonText = button.querySelector(".btn-text");
-
-    button.disabled = true;
-
-    let progress = 0;
-
-    loadingTimer = setInterval(() => {
-        progress = Math.min(
-            progress + Math.random() * 7 + 3,
-            100
-        );
-
-        loadingBar.style.width = `${progress}%`;
-
-        const step = LOADING_STEPS.find(
-            item => progress <= item.limit
-        ) || LOADING_STEPS[LOADING_STEPS.length - 1];
-
-        status.textContent = step.text;
-
-        if (progress >= 100) {
-            clearInterval(loadingTimer);
-
-            button.disabled = false;
-
-            if (buttonText) {
-                buttonText.textContent = "Open Our Friendship 💗";
-            }
-
-            overlay.classList.add("finished");
-
-            setTimeout(() => {
-                overlay.style.display = "none";
-                openLetter();
-            }, 700);
-        }
-    }, 160);
-}
-
-
-/* ---------- CONNECT ALL BUTTONS ---------- */
-
-function connectButtons() {
-    $("#startBtn").addEventListener(
-        "click",
-        startExperience
-    );
-
-    $("#letterClose").addEventListener(
-        "click",
-        closeLetter
-    );
-
-    $("#letterEditBtn").addEventListener(
-        "click",
-        openEditor
-    );
-
-    $("#saveLetterBtn").addEventListener(
-        "click",
-        saveLetter
-    );
-
-    $("#shareLetterBtn").addEventListener(
-        "click",
-        shareLetter
-    );
-
-    $("#letterOverlay").addEventListener(
-        "click",
-        event => {
-            if (event.target === $("#letterOverlay")) {
-                closeLetter();
+                startBtn.removeAttribute('disabled');
             }
         }
-    );
 
-    document.addEventListener("keydown", event => {
-        if (event.key === "Escape") {
-            closeLetter();
-        }
+        requestAnimationFrame(animateLoader);
+    }
+
+    setTimeout(startCardLoader, 400);
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+        playClickSound();
+        document.getElementById('startOverlay').classList.add('fade-out');
+        setTimeout(() => {
+            startTimestamp = performance.now();
+            isIntroFinished = true;
+        }, 800);
     });
-}
 
+    let isLetterOpen = false;
+    let isLetterTyping = false;
 
-/* ---------- INITIALIZE ---------- */
+    let recipient = 'Maisha';
+    let sender = 'Mohibul';
+    let message = "Dear Maisha,\n\nYou are a truly special friend, and I am grateful to have you in my life. 💗\n\nThank you for the smiles, the memories, and all the little moments that make our friendship beautiful. No matter how busy life gets or how far apart we may be, I hope our friendship always stays strong. 🌸\n\nA true friendship is a precious gift, and I am glad that we share this beautiful bond. May your life always be filled with happiness, success, and countless reasons to smile. ✨\n\nStay happy, keep shining, and never forget how wonderful you are as a friend.\n\nYour friend,\nMohibul 💖";
 
-document.addEventListener("DOMContentLoaded", () => {
-    loadSavedData();
-    loadSharedLink();
-    updateLetter();
+    function initLoveData() {
+        const params = new URLSearchParams(window.location.search);
+        let loadedData = null;
 
-    setupCanvas();
-    connectButtons();
+        const dParam = params.get('d');
+        if (dParam) {
+            try {
+                const decoded = decodeURIComponent(escape(atob(dParam)));
+                loadedData = JSON.parse(decoded);
+            } catch (e) {
+                console.error("Failed to decode 'd' parameter", e);
+            }
+        }
 
-    /*
-       Enable the start button after the initial
-       friendship screen appears.
-    */
-    setTimeout(() => {
-        $("#startBtn").disabled = false;
-    }, 800);
-});
+        const toParam = params.get('to');
+        const fromParam = params.get('from');
+        const msgParam = params.get('msg');
+
+        if (toParam || fromParam || msgParam) {
+            loadedData = {
+                to: toParam || recipient,
+                from: fromParam || sender,
+                msg: msgParam || message
+            };
+        }
+
+        if (!loadedData) {
+            const localTo = localStorage.getItem('love_to');
+            const localFrom = localStorage.getItem('love_from');
+            const localMsg = localStorage.getItem('love_msg');
+
+            if (localTo || localFrom || localMsg) {
+                loadedData = {
+                    to: localTo || recipient,
+                    from: localFrom || sender,
+                    msg: localMsg || message
+                };
+            }
+        }
+
+        if (loadedData) {
+            recipient = loadedData.to || recipient;
+            sender = loadedData.from || sender;
+            message = loadedData.msg || message;
+        }
+
+        document.getElementById('recipientInput').value = recipient;
+        document.getElementById('senderInput').value = sender;
+        document.getElementById('messageInput').value = message;
+
+        document.getElementById('letterHeaderTitle').textContent = `For ${recipient}`;
+        document.getElementById('letterSign').textContent = `— coded with friendship by ${sender}`;
+
+        const m2Span = document.querySelector('.m2 span');
+        if (m2Span) {
+            m2Span.textContent = recipient;
+        }
+    }
+
+    initLoveData();
+
+    function openLetter() {
+        if (isLetterOpen) return;
+        isLetterOpen = true;
+        playClickSound();
+
+        document.getElementById('letterCard').classList.remove('editing');
+
+        const overlay = document.getElementById('letterOverlay');
+        overlay.classList.add('active');
+
+        const body = document.getElementById('letterBody');
+        body.innerHTML = '';
+
+        if (isLetterTyping) return;
+        isLetterTyping = true;
+
+        let charIdx = 0;
+
+        function typeChar() {
+            if (!isLetterOpen || document.getElementById('letterCard').classList.contains('editing')) {
+                isLetterTyping = false;
+                return;
+            }
+
+            if (charIdx < message.length) {
+                const char = message[charIdx];
