@@ -1,1 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>💗 I Coded This Heartbeat For You</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="start-overlay" id="startOverlay">
+        <div class="glass-card">
+            <div class="card-glow"></div>
+            <div class="card-icon">💓</div>
+            <h2 class="card-title">From love</h2>
+            <div class="loading-bar-container">
+                <div class="loading-bar" id="loadingBar"></div>
+            </div>
+            <p class="status-text" id="statusText">Ready to compile...</p>
+            <button class="start-btn" id="startBtn" disabled>
+                <span class="btn-text">Donot Click 🚨 (Self-Destruct)</span>
+                <span class="btn-shine"></span>
+            </button>
+        </div>
+    </div>
+
+    <canvas id="c"></canvas>
+
+    <div class="letter-overlay" id="letterOverlay">
+        <div class="letter-card" id="letterCard">
+            <button class="letter-close" id="letterClose">&times;</button>
+            <div class="letter-header">
+                <span id="letterHeaderTitle">for Maisha</span>
+                <button class="letter-edit-btn" id="letterEditBtn" title="Edit Letter">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="letter-view-container" id="letterViewContainer">
+                <div class="letter-body" id="letterBody"></div>
+                <div class="letter-sign" id="letterSign">— coded with love by Mohibul</div>
+            </div>
+
+            <div class="letter-edit-container" id="letterEditContainer">
+                <div class="form-group">
+                    <label for="recipientInput">To</label>
+                    <input type="text" id="recipientInput" maxlength="30" placeholder="Recipient Name">
+                </div>
+                <div class="form-group">
+                    <label for="senderInput">From</label>
+                    <input type="text" id="senderInput" maxlength="40" placeholder="Sender Name">
+                </div>
+                <div class="form-group">
+                    <label for="messageInput">Letter</label>
+                    <textarea id="messageInput" rows="9" maxlength="800" placeholder="Your love letter..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="form-btn save-btn" id="saveLetterBtn">Save & Close</button>
+                    <button class="form-btn share-btn" id="shareLetterBtn">Copy Link</button>
+                </div>
+                <div class="share-toast" id="shareToast">Link copied to clipboard!</div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="msg" id="msg">
+        <p class="m1">This is my Friend</p>
+        <p class="m2">for <span>Maisha</span></span> 💗</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
