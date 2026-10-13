@@ -30,9 +30,9 @@
     const NUM_POINTS = 180;
     const ROTATION_SPEED_Y = 0.012;
 
-    const WORDS = [
-        'I love you', 'i love you', '❤', 'love', 'te amo', 'je t\'aime',
-        'forever', 'always', 'you', 'me & you', 'love you', 'sweetheart'
+    const WORDS = ['friendship', 'best friends', '❤', 'friends',
+    'forever', 'always', 'Maisha', 'Mohibul',
+    'besties', 'memories', 'true friends', 'smile','baby','sweetheart'
     ];
 
     let startTimestamp = null;
