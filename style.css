@@ -314,7 +314,7 @@ html, body {
 .letter-card {
     position: relative;
     width: min(90vw, 360px);
-    max-height: 85vh;
+    max-height: 95;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 45, 85, 0.3) transparent;
