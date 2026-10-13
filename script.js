@@ -217,7 +217,9 @@ function typeChar() {
         charIdx++;
         setTimeout(typeChar, 35);
     } else {
-        isLetterTyping = false;
+    isLetterTyping = false;
+    console.log("Total message characters:", message.length);
+    console.log("Displayed characters:", charIdx);
     }
 }
 
