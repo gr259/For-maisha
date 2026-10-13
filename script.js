@@ -107,8 +107,7 @@
     
     let recipient = 'Maisha';
     let sender = 'Mohibul';
-    let message = "Dear Maisha,\n\nThis is my love for you... 🌹\n\nEvery line of code, every pixel, and every beat of this heart is a reminder of how incredibly special you are to me. You make my world so much brighter, and my life complete. ✨\n\nNo matter where life takes us, my heart will always run in an infinite loop for you, beating forever and always. You are my today and all of my tomorrows. 💗💍";
-
+    let message ="Dear Maisha,\n\nThis is a little message to remind you how special you are to me. 🌹\n\nEvery line of code, every pixel, and every beat of this heart represents our beautiful friendship. You make my world brighter with your presence, and I’m truly grateful to have a best friend like you. ✨\n\nNo matter where life takes us, may our friendship stay strong, filled with laughter, beautiful memories, and endless support. You will always be a special part of my life. 💗🤝";
     function initLoveData() {
         const params = new URLSearchParams(window.location.search);
         let loadedData = null;
@@ -248,9 +247,8 @@ setTimeout(typeChar, 400);
     document.getElementById('saveLetterBtn').addEventListener('click', () => {
         playClickSound();
         const newRecipient = document.getElementById('recipientInput').value.trim() ||'Maisha';
-        const newSender = document.getElementById('senderInput').value.trim() || 'Mohibul';
-        const newMessage = document.getElementById('messageInput').value.trim() || `Dear ${newRecipient},\n\nThis is my love for you... 🌹\n\nEvery line of code, every pixel, and every beat of this heart is a reminder of how incredibly special you are to me. You make my world so much brighter, and my life complete. ✨\n\nNo matter where life takes us, my heart will always run in an infinite loop for you, beating forever and always. You are my today and all of my tomorrows. 💗💍`;
-
+        const newSender = document.getElementById('senderInput').value.trim() ||'Mohibul';
+        const newMessage = document.getElementById('messageInput').value.trim() ||'Dear Maisha,\n\nThis is a little message to remind you how special you are to me. 🌹\n\nEvery line of code, every pixel, and every beat of this heart represents our beautiful friendship. You make my world brighter with your presence, and I’m truly grateful to have a best friend like you. ✨\n\nNo matter where life takes us, may our friendship stay strong, filled with laughter, beautiful memories, and endless support. You will always be a special part of my life. 💗🤝';
         recipient = newRecipient;
         sender = newSender;
         message = newMessage;
