@@ -106,9 +106,9 @@
     let isLetterOpen = false;
     let isLetterTyping = false;
     
-    let recipient ='Maisha';
-    let sender ='Mohibul';
-    let message ="Dear Maisha,\n\nThis is my love for you... 🌹\n\nEvery line of code, every pixel, and every beat of this heart is a reminder of how incredibly special you are to me. You make my world so much brighter, and my life complete. ✨\n\nNo matter where life takes us, my heart will always run in an infinite loop for you, beating forever and always. You are my today and all of my tomorrows. 💗💍";
+    let recipient = 'Maisha';
+    let sender = 'Mohibul';
+    let message = "Dear Maisha,\n\nThis is my love for you... 🌹\n\nEvery line of code, every pixel, and every beat of this heart is a reminder of how incredibly special you are to me. You make my world so much brighter, and my life complete. ✨\n\nNo matter where life takes us, my heart will always run in an infinite loop for you, beating forever and always. You are my today and all of my tomorrows. 💗💍";
 
     function initLoveData() {
         const params = new URLSearchParams(window.location.search);
@@ -170,7 +170,7 @@
         
         const m2Span = document.querySelector('.m2 span');
         if (m2Span) {
-            m2Span.textContent =Maisha;
+            m2Span.textContent = 'Maisha';
         }
     }
 
@@ -238,7 +238,7 @@
 
     document.getElementById('saveLetterBtn').addEventListener('click', () => {
         playClickSound();
-        const newRecipient = document.getElementById('recipientInput').value.trim() || 'Maisha';
+        const newRecipient = document.getElementById('recipientInput').value.trim() ||'Maisha';
         const newSender = document.getElementById('senderInput').value.trim() || 'Mohibul';
         const newMessage = document.getElementById('messageInput').value.trim() || `Dear ${newRecipient},\n\nThis is my love for you... 🌹\n\nEvery line of code, every pixel, and every beat of this heart is a reminder of how incredibly special you are to me. You make my world so much brighter, and my life complete. ✨\n\nNo matter where life takes us, my heart will always run in an infinite loop for you, beating forever and always. You are my today and all of my tomorrows. 💗💍`;
 
