@@ -189,31 +189,39 @@
         overlay.classList.add('active');
 
         const body = document.getElementById('letterBody');
-        body.innerHTML = '';
+body.replaceChildren();
 
-        if (isLetterTyping) return;
-        isLetterTyping = true;
+if (isLetterTyping) return;
+isLetterTyping = true;
 
-        let charIdx = 0;
-        function typeChar() {
-            if (!isLetterOpen || document.getElementById('letterCard').classList.contains('editing')) {
-                isLetterTyping = false;
-                return;
-            }
-            if (charIdx < message.length) {
-                const char = message[charIdx];
-                if (char === '\n') {
-                    body.innerHTML += '<br>';
-                } else {
-                    body.innerHTML += char;
-                }
-                charIdx++;
-                setTimeout(typeChar, 35);
-            } else {
-                isLetterTyping = false;
-            }
+let charIdx = 0;
+
+function typeChar() {
+    if (
+        !isLetterOpen ||
+        document.getElementById('letterCard').classList.contains('editing')
+    ) {
+        isLetterTyping = false;
+        return;
+    }
+
+    if (charIdx < message.length) {
+        const char = message[charIdx];
+
+        if (char === '\n') {
+            body.appendChild(document.createElement('br'));
+        } else {
+            body.appendChild(document.createTextNode(char));
         }
-        setTimeout(typeChar, 400);
+
+        charIdx++;
+        setTimeout(typeChar, 35);
+    } else {
+        isLetterTyping = false;
+    }
+}
+
+setTimeout(typeChar, 400);
     }
 
     function closeLetter() {
