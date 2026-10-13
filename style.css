@@ -370,11 +370,11 @@ html, body {
     font-family: 'Fira Code', monospace;
     font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     color: #ff2d55;
     margin-bottom: 20px;
     border-bottom: 1px solid rgba(255, 45, 85, 0.15);
-    padding-bottom: 8px;
+    padding-bottom:4px;
 }
 
 .letter-edit-btn {
@@ -402,11 +402,11 @@ html, body {
 
 .letter-body {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 12;
+    font-size: 12px;
     line-height: 1.5;
     color: rgba(255, 255, 255, 0.85);
-    min-height: 100px;
-    margin-bottom: 24px;
+    min-height: 60px;
+    margin-bottom: 20px;
     white-space: pre-line;
 }
 
