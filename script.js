@@ -106,9 +106,9 @@
     let isLetterOpen = false;
     let isLetterTyping = false;
     
-    let recipient = 'Maisha';
-    let sender = 'Mohibul';
-    let message = "Dear Maisha,\n\nThis is my love for you... 🌹\n\nEvery line of code, every pixel, and every beat of this heart is a reminder of how incredibly special you are to me. You make my world so much brighter, and my life complete. ✨\n\nNo matter where life takes us, my heart will always run in an infinite loop for you, beating forever and always. You are my today and all of my tomorrows. 💗💍";
+    let recipient ='Maisha';
+    let sender ='Mohibul';
+    let message ="Dear Maisha,\n\nThis is my love for you... 🌹\n\nEvery line of code, every pixel, and every beat of this heart is a reminder of how incredibly special you are to me. You make my world so much brighter, and my life complete. ✨\n\nNo matter where life takes us, my heart will always run in an infinite loop for you, beating forever and always. You are my today and all of my tomorrows. 💗💍";
 
     function initLoveData() {
         const params = new URLSearchParams(window.location.search);
@@ -165,12 +165,12 @@
         document.getElementById('messageInput').value = message;
         
         // Update the header, sign, and overlay text
-        document.getElementById('letterHeaderTitle').textContent = `for ${recipient}`;
-        document.getElementById('letterSign').textContent = `— coded with love by ${sender}`;
+        document.getElementById('letterHeaderTitle').textContent = `for Maisha`;
+        document.getElementById('letterSign').textContent = `— coded with love by Mohibul`;
         
         const m2Span = document.querySelector('.m2 span');
         if (m2Span) {
-            m2Span.textContent = recipient;
+            m2Span.textContent =Maisha;
         }
     }
 
@@ -252,12 +252,12 @@
         localStorage.setItem('love_msg', message);
 
         // Update display
-        document.getElementById('letterHeaderTitle').textContent = `for ${recipient}`;
-        document.getElementById('letterSign').textContent = `— coded with love by ${sender}`;
+        document.getElementById('letterHeaderTitle').textContent = `for Maisha`;
+        document.getElementById('letterSign').textContent = `— coded with love by Mohibul`;
         
         const m2Span = document.querySelector('.m2 span');
         if (m2Span) {
-            m2Span.textContent = recipient;
+            m2Span.textContent =Maisha;
         }
 
         closeLetter();
